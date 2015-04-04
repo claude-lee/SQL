@@ -1,0 +1,25 @@
+Here's one possible solution:
+
+select ordernames.name, count(*) as num
+  from animals, taxonomy, ordernames
+  where animals.species = taxonomy.name
+    and taxonomy.t_order = ordernames.t_order
+  group by ordernames.name
+  order by num desc
+And here's another, this time using the explicit join style:
+
+select ordernames.name, count(*) as num
+  from (animals join taxonomy 
+                on animals.species = taxonomy.name)
+                as ani_tax
+        join ordernames
+             on ani_tax.t_order = ordernames.t_order
+  group by ordernames.name
+  order by num desc
+I think the upper version is much more readable than the lower one, 
+because in the explicit join style you have to explicitly tell the database what order to join the tables in 
+— ((a join b) join c) — instead of just letting the database worry about that.
+
+If you're using a more barebones database (like SQLite) there can be a performance benefit 
+to the explicit join style. But in PostgreSQL, the more server-oriented database system 
+we'll be using next lesson, the query planner should optimize away any difference.
